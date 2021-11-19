@@ -3,7 +3,7 @@ resource "aws_instance" "ec2_instances" {
 
   ami = var.ec2_ami #data.aws_ami.ubuntu.id
   instance_type = var.ec2_instance_type
-  subnet_id = aws_subnet.ec2_cluster_public_subnet.*.id[count.index]
+  subnet_id = aws_subnet.ec2_cluster_private_subnet.*.id[count.index]
 
   # Do something basic so as to have a demonstratable instance
   user_data = <<EOF

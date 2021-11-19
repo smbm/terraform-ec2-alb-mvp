@@ -6,6 +6,10 @@ variable "number_of_public_subnets" {
   default = 3
 }
 
+variable "number_of_private_subnets" {
+  default = 3
+}
+
 variable "number_of_ec2_instances" {
   default = 3
 }

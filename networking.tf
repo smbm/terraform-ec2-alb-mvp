@@ -13,6 +13,15 @@ resource "aws_subnet" "ec2_cluster_public_subnet" {
   vpc_id = aws_vpc.ec2_cluster_vpc.id
 }
 
+resource "aws_subnet" "ec2_cluster_private_subnet" {
+  count = var.number_of_private_subnets
+
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+  cidr_block = "10.42.${count.index + 11}.0/24"
+
+  vpc_id = aws_vpc.ec2_cluster_vpc.id
+}
+
 resource "aws_security_group" "ec2_cluster_sg" {
   name = "ec2_cluster_sg"
   description = "Allow HTTP"
@@ -78,8 +87,18 @@ resource "aws_route_table" "ec2_cluster_rt" {
   }
 }
 
+resource "aws_default_route_table" "ec2_cluster_private_rt" {
+  default_route_table_id = aws_vpc.ec2_cluster_vpc.default_route_table_id
+}
+
 resource "aws_route_table_association" "ec2_cluster_pub_subnet_assoc" {
   count = var.number_of_public_subnets
   subnet_id = aws_subnet.ec2_cluster_public_subnet.*.id[count.index]
   route_table_id = aws_route_table.ec2_cluster_rt.id
+}
+
+resource "aws_route_table_association" "ec2_cluster_priv_subnet_assoc" {
+  count = var.number_of_private_subnets
+  subnet_id = aws_subnet.ec2_cluster_private_subnet.*.id[count.index]
+  route_table_id = aws_default_route_table.ec2_cluster_private_rt.id
 }
